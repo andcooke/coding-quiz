@@ -1,0 +1,54 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+h1 {
+    font-size: 24px;
+}
+
+h2 {
+    font-size: 20px;
+}
+
+.color {
+    color: green;
+}
+
+.center {
+    text-align: center;
+}
+
+main button {
+    margin: 0 auto;
+}
+
+.game-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+}
+
+button {
+    padding: 10px 100px;
+    margin: 20px;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 24px;
+    cursor: pointer;
+
+}
+
+#start-game-btn {
+    margin: 30px;
+}
+
+.ans-btn {
+    justify-content: center;
+    padding: 10px 75px;
+    margin-left: 20px;
+}
