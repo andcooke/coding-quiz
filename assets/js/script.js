@@ -40,31 +40,41 @@ let timerEl = document.querySelector(".timer");
 let questionEl = document.querySelector(".question");
 let topScoresEl = document.querySelector(".top-scores")
 
+
 let questionNumber = 0;
 let timer = 30;
 let score = 0;
+let currentScore;
 let timeInterval;
 
 
+let scoresToBeat = [
+  {player: "",
+   score: 0
+  },
+  {player: "",
+    score: 0
+  },
+  {player: "",
+    score: 0
+  },
+  {player: "",
+    score: 0
+  },
+  {player: "",
+    score: 0
+  }
+  ];
+
 //to start game
 startGameEl.addEventListener("click", function () {
-  titleEl.remove();
+  titleEl.innerHTML = "";
   timeInterval = setInterval(countdown, 1000);
   timerEl.textContent = timer;
   topScoresEl.textContent = "Score: " + score;
   showQuestion();
 });
 
-
-
-
-let printScore = function () {
-  let highScores = JSON.parse(localStorage.getItem("highScores")) || [];
-  highScores.sort(function (a,b) {
-    return b.score - a.score;
-  }) 
-
-}
 
 let countdown = function () {
   timer--;
@@ -82,40 +92,71 @@ let endQuiz = function () {
 };
 
 
+
 let endGame = function () {
-  //if score is in top 5
-  printScore();
-  let announcement = document.createElement("h2");
-  announcement.textContent = "Congratulations! New High Score!"
-  rootEl.appendChild(announcement);
-  let initialEl = document.createElement("form");
-  rootEl.appendChild(initialEl)
-  let initialSubmission = document.createElement("input");
-  initialSubmission.setAttribute("type", "text");
- 
-  initialSubmission.classList.add("initialsSub")
 
-  initialEl.appendChild(initialSubmission);
-  let submitBtn = document.createElement("button");
-  submitBtn.classList.add("submit-btn")
-  submitBtn.textContent = "SUBMIT"
-  rootEl.appendChild(submitBtn)
-  submitBtn.onclick = saveScore;
-}
+//check if score is in top 5
+ //sort top scores array
+  scoresToBeat.sort(function (a, b) {
+    return b.score - a.score;
+  })
+ //if current score is greater than scoresToBeat[4].score
+  if (score >= scoresToBeat[4].score) {
+ //type name 
+   let announcement = document.createElement("h2");
+   announcement.innerHTML = "<br>New High Score! <br><br>Type your name below to claim your place on the leaderboard!</h2>"; 
+   rootEl.appendChild(announcement);
+   let initialEl = document.createElement("form");
+   rootEl.appendChild(initialEl);
+   let initialSubmission = document.createElement("input");
+   initialSubmission.setAttribute("type", "text");
+   initialEl.appendChild(initialSubmission);
+   let submitBtn = document.createElement("button");
+   submitBtn.classList.add("submit-btn");
+   submitBtn.textContent = "SUBMIT";
+   rootEl.appendChild(submitBtn)
+//submit name and add to list of top scores in local storage
+   submitBtn.addEventListener("click", function (event){
+     event.preventDefault();
 
-//onclick function on button that points to new function saveScore.
-let saveScore = function () {
-  let highScores = JSON.parse(localStorage.getItem("highScores")) || [];
-  let initials = initialsSub.value.trim()
-  let newScore = {
-    score: score,
-    initials: initials
+    currentScore = {
+      player: initialSubmission.value.trim(),
+      score: score
+    };
+
+    scoresToBeat.push(currentScore);
+    scoresToBeat.sort(function (a, b) {
+      return b.score - a.score;
+    })
+    localStorage.setItem("scoresToBeat", JSON.stringify(scoresToBeat))
+    submitBtn.remove();
+    printScores();
+  })
+    } else {
+      let loseScreen = document.createElement("h2");
+      loseScreen.innerHTML = "Sorry, you did not place in the top 5. <br> Want to play again?"
+      rootEl.appendChild(loseScreen)
+
+      questionNumber = 0;
+      timer = 30;
+      startGameEl.innerHTML = "TRY AGAIN"
+    }
   }
-  highScores.push(newScore);
-  localStorage.setItem("highScores", JSON.stringify(highScores));
-  printScore();
-}
 
+
+
+let printScores = function (){
+  let olEl = document.createElement("ol");
+  for (let j = 0; j < 5; j++) {
+    let listEl = document.createElement("li");
+    listEl.textContent = scoresToBeat[j].player + " - " + scoresToBeat[j].score;
+    olEl.appendChild(listEl);
+  }
+  rootEl.appendChild(olEl);
+  startGameEl.innerHTML = "TRY AGAIN"
+  
+};
+  
 
 let showQuestion = function () {
   questionEl.innerHTML = "";
@@ -152,3 +193,4 @@ let checkAnswers = function () {
     showQuestion();
   }
 };
+
